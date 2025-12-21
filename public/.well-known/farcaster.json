@@ -1,6 +1,7 @@
 {
     "version": "1",
     "name": "BaseStride",
+    "subtitle": "Track your steps and earn rewards on Base",
     "iconUrl": "https://basestride.vercel.app/icon.png",
     "homeUrl": "https://basestride.vercel.app",
     "imageUrl": "https://basestride.vercel.app/og-image.png",
