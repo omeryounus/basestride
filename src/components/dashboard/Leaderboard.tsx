@@ -2,26 +2,34 @@ import { Trophy, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { LeaderboardSkeleton } from "@/components/ui/skeleton";
+import { useActivity } from "@/hooks/useActivity";
 
-const MOCK_LEADERBOARD = [
-    { rank: 1, user: "0x12...4A2", steps: 24500, avatar: "bg-yellow-500" },
-    { rank: 2, user: "0x89...2B1", steps: 21200, avatar: "bg-gray-300" },
-    { rank: 3, user: "0x33...C90", steps: 18900, avatar: "bg-orange-400" },
-    { rank: 4, user: "0x77...1F4", steps: 15400, avatar: "bg-blue-400" },
-    { rank: 5, user: "0x55...8E2", steps: 12100, avatar: "bg-purple-400" },
-    { rank: 6, user: "0x99...3D5", steps: 10500, avatar: "bg-green-400" },
-    { rank: 7, user: "0x22...5A1", steps: 9800, avatar: "bg-red-400" },
-    { rank: 8, user: "0x44...7B3", steps: 8700, avatar: "bg-indigo-400" },
-];
+interface LeaderboardItem {
+    wallet_address: string;
+    total_lifetime_steps: number;
+}
 
 export function Leaderboard() {
     const [isLoading, setIsLoading] = useState(true);
+    const [leaderboardData, setLeaderboardData] = useState<LeaderboardItem[]>([]);
+    const { getLeaderboard } = useActivity();
 
     useEffect(() => {
-        // Simulate loading
-        const timer = setTimeout(() => setIsLoading(false), 1000);
-        return () => clearTimeout(timer);
-    }, []);
+        const fetchLeaderboard = async () => {
+            setIsLoading(true);
+            const { data, error } = await getLeaderboard();
+            if (!error && data) {
+                setLeaderboardData(data as LeaderboardItem[]);
+            }
+            setIsLoading(false);
+        };
+
+        fetchLeaderboard();
+    }, [getLeaderboard]);
+
+    const shortenAddress = (address: string) => {
+        return `${address.slice(0, 4)}...${address.slice(-3)}`;
+    };
 
     return (
         <div className="w-full max-w-md mx-auto h-full flex flex-col p-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -33,10 +41,15 @@ export function Leaderboard() {
             <div className="flex-1 overflow-y-auto space-y-3 pb-24 scrollbar-hide">
                 {isLoading ? (
                     <LeaderboardSkeleton />
+                ) : leaderboardData.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                        <User size={48} className="opacity-20 mb-4" />
+                        <p className="text-sm font-medium">No striders yet. Be the first!</p>
+                    </div>
                 ) : (
-                    MOCK_LEADERBOARD.map((item, index) => (
+                    leaderboardData.map((item, index) => (
                         <div
-                            key={index}
+                            key={item.wallet_address}
                             className={cn(
                                 "flex items-center justify-between p-4 rounded-xl border backdrop-blur-md transition-all",
                                 index < 3
@@ -56,15 +69,22 @@ export function Leaderboard() {
                                 </div>
 
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-full ${item.avatar} flex items-center justify-center text-black/50`}>
+                                    <div className={cn(
+                                        "w-8 h-8 rounded-full flex items-center justify-center text-black/50",
+                                        index === 0 ? "bg-yellow-500/20" : "bg-white/10"
+                                    )}>
                                         <User size={16} />
                                     </div>
-                                    <span className="font-mono text-sm font-medium opacity-90">{item.user}</span>
+                                    <span className="font-mono text-sm font-medium opacity-90">
+                                        {shortenAddress(item.wallet_address)}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="flex flex-col items-end">
-                                <span className="text-lg font-bold tracking-tight">{item.steps.toLocaleString()}</span>
+                                <span className="text-lg font-bold tracking-tight">
+                                    {item.total_lifetime_steps.toLocaleString()}
+                                </span>
                                 <span className="text-[10px] text-muted-foreground font-bold tracking-wider">STEPS</span>
                             </div>
                         </div>

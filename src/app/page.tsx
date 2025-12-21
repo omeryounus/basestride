@@ -4,15 +4,17 @@ import { usePedometer } from "@/hooks/usePedometer";
 import { StepCounter } from "@/components/dashboard/StepCounter";
 import { StepSimulator } from "@/components/debug/StepSimulator";
 import { Button } from "@/components/ui/button";
-import { Zap, MapPin, Trophy, Play, Pause, ShoppingBag } from "lucide-react";
-import { useState } from "react";
-import { WalletWrapper } from "@/components/WalletWrapper";
-import { Leaderboard } from "@/components/dashboard/Leaderboard";
-import { MarketPlaceholder } from "@/components/dashboard/MarketPlaceholder";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
+import { Coins, Zap, MapPin, Trophy, Play, Pause, ShoppingBag } from "lucide-react";
+import { useState, useEffect } from "react";
+import { WalletWrapper } from "@/components/WalletWrapper";
+import { Leaderboard } from "@/components/dashboard/Leaderboard";
+import { MarketPlaceholder } from "@/components/dashboard/MarketPlaceholder";
+import { useAccount } from "wagmi";
+import { useActivity } from "@/hooks/useActivity";
 
 type View = 'RUN' | 'LEADERBOARD' | 'MARKET';
 
@@ -26,8 +28,25 @@ export default function Home() {
     startTracking,
     stopTracking
   } = usePedometer();
+  const { address } = useAccount();
+  const { initUser, saveSteps, getUserStats } = useActivity();
+  const [balance, setBalance] = useState<number>(0);
 
-  const toggleTracking = () => {
+  const fetchStats = async (addr: string) => {
+    const { data } = await getUserStats(addr);
+    if (data) {
+      setBalance(data.total_earned_tokens || 0);
+    }
+  };
+
+  // Initialize user in Supabase when wallet connects
+  useEffect(() => {
+    if (address) {
+      initUser(address).then(() => fetchStats(address));
+    }
+  }, [address, initUser]);
+
+  const toggleTracking = async () => {
     if (!isTracking) {
       if (permissionGranted === null || permissionGranted === false) {
         requestPermission();
@@ -36,6 +55,16 @@ export default function Home() {
       }
     } else {
       stopTracking();
+      // Save steps to Supabase when stopping
+      if (address && steps > 0) {
+        try {
+          await saveSteps(address, steps);
+          await fetchStats(address);
+          console.log(`Saved ${steps} steps for ${address}`);
+        } catch (err) {
+          console.error("Failed to save steps:", err);
+        }
+      }
     }
   };
 
@@ -54,6 +83,19 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Token Balance */}
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-secondary/20 rounded-full border border-secondary/30">
+                <Coins size={14} className="text-secondary opacity-80" />
+                <span className="text-xs font-black tracking-tight text-secondary">
+                  {balance.toFixed(2)} <span className="opacity-70">STRIDE</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Energy Bar */}
             <div className="flex flex-col items-end w-24">
               <div className="flex justify-between w-full text-[10px] items-center mb-1">
