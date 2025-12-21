@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "BaseStride | Move-to-Earn",
   description: "Earn $STRIDE for every step on Base.",
+  other: {
+    'base:app_id': '69479cedd19763ca26ddc7e7',
+  },
 };
 
 export default function RootLayout({
