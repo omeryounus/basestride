@@ -1,0 +1,15 @@
+{
+    "version": "1",
+    "name": "BaseStride",
+    "iconUrl": "https://basestride.vercel.app/icon.png",
+    "homeUrl": "https://basestride.vercel.app",
+    "imageUrl": "https://basestride.vercel.app/og-image.png",
+    "ogImageUrl": "https://basestride.vercel.app/og-image.png",
+    "ogTitle": "BaseStride | Move-to-Earn",
+    "ogDescription": "Earn $STRIDE for every step on Base. Track your steps, compete on the leaderboard, and get rewarded for staying active.",
+    "accountAssociation": {
+        "header": "PLACEHOLDER_HEADER",
+        "payload": "PLACEHOLDER_PAYLOAD",
+        "signature": "PLACEHOLDER_SIGNATURE"
+    }
+}
