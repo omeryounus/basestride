@@ -4,9 +4,19 @@
     "iconUrl": "https://basestride.vercel.app/icon.png",
     "homeUrl": "https://basestride.vercel.app",
     "imageUrl": "https://basestride.vercel.app/og-image.png",
+    "splashImageUrl": "https://basestride.vercel.app/splash.png",
+    "splashBackgroundColor": "#0052FF",
     "ogImageUrl": "https://basestride.vercel.app/og-image.png",
     "ogTitle": "BaseStride | Move-to-Earn",
     "ogDescription": "Earn $STRIDE for every step on Base. Track your steps, compete on the leaderboard, and get rewarded for staying active.",
+    "primaryCategory": "health-fitness",
+    "tags": [
+        "fitness",
+        "move-to-earn",
+        "web3",
+        "base",
+        "health"
+    ],
     "accountAssociation": {
         "header": "eyJmaWQiOjEzODU1NDEsInR5cGUiOiJhdXRoIiwia2V5IjoiMHg2NDc1NzBCMUM0MkI2MDQzNmRBYjA5ODM2ZjQ0RTdFRjk5OTUwZTA5In0",
         "payload": "eyJkb21haW4iOiJiYXNlc3RyaWRlLnZlcmNlbC5hcHAifQ",
