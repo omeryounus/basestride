@@ -11,6 +11,7 @@ import { Leaderboard } from "@/components/dashboard/Leaderboard";
 import { MarketPlaceholder } from "@/components/dashboard/MarketPlaceholder";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 type View = 'RUN' | 'LEADERBOARD' | 'MARKET';
