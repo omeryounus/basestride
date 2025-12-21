@@ -24,13 +24,6 @@ export default function Home() {
     stopTracking
   } = usePedometer();
 
-  // Handle auto-start if permission already granted
-  useEffect(() => {
-    if (permissionGranted && !isTracking) {
-      startTracking();
-    }
-  }, [permissionGranted, isTracking, startTracking]);
-
   const toggleTracking = () => {
     if (!isTracking) {
       if (permissionGranted === null || permissionGranted === false) {
