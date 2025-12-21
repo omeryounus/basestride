@@ -19,6 +19,20 @@ export const metadata: Metadata = {
   description: "Earn $STRIDE for every step on Base.",
   other: {
     'base:app_id': '69479cedd19763ca26ddc7e7',
+    'fc:miniapp': JSON.stringify({
+      version: "next",
+      imageUrl: "https://basestride.vercel.app/og-image.png",
+      button: {
+        title: "Open BaseStride",
+        action: {
+          type: "launch_frame",
+          url: "https://basestride.vercel.app",
+          name: "BaseStride",
+          splashImageUrl: "https://basestride.vercel.app/splash.png",
+          splashBackgroundColor: "#0052FF"
+        }
+      }
+    })
   },
 };
 
