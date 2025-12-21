@@ -13,6 +13,8 @@ import { useState, useEffect } from "react";
 import { WalletWrapper } from "@/components/WalletWrapper";
 import { Leaderboard } from "@/components/dashboard/Leaderboard";
 import { MarketPlaceholder } from "@/components/dashboard/MarketPlaceholder";
+import { ClaimRewards } from "@/components/dashboard/ClaimRewards";
+import { type Address } from "viem";
 import { useAccount } from "wagmi";
 import { useActivity } from "@/hooks/useActivity";
 
@@ -116,6 +118,15 @@ export default function Home() {
           {currentView === 'RUN' && (
             <div className="flex flex-col items-center w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
               <StepCounter steps={steps} goal={10000} />
+
+              {/* Claim Rewards Section */}
+              {balance > 0 && !isTracking && address && (
+                <ClaimRewards
+                  amount={balance}
+                  address={address as Address}
+                  onSuccess={() => fetchStats(address)}
+                />
+              )}
 
               {/* Action Button */}
               <div className="mt-8 z-10">

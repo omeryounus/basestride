@@ -35,6 +35,7 @@ export default function OnchainProviders({ children }: { children: ReactNode }) 
                         appearance: {
                             mode: 'auto',
                         },
+                        paymaster: `${process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL}`,
                     }}
                 >
                     {children}
