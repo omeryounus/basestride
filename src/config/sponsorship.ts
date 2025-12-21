@@ -10,7 +10,7 @@ import { Address } from 'viem';
  * Coinbase Developer Platform (CDP) project settings.
  */
 
-export const REWARDS_CONTRACT_ADDRESS = '0x8A6136be9fD5c285469AA946F97f06D44d1871a2' as Address;
+export const REWARDS_CONTRACT_ADDRESS = '0x65bED2A902D6d76012D7826d2394151c81E54Abc' as Address;
 
 export const SPONSORSHIP_ALLOWLIST = {
     // Allowlist by contract address
@@ -21,7 +21,7 @@ export const SPONSORSHIP_ALLOWLIST = {
     // Specific function allowlist (optional but recommended)
     // Format: "contractAddress:functionName"
     functions: [
-        `${REWARDS_CONTRACT_ADDRESS}:claim`,
+        `${REWARDS_CONTRACT_ADDRESS}:claimRewards`,
     ],
 };
 

@@ -13,15 +13,20 @@ import {
 } from '@coinbase/onchainkit/transaction';
 import { type Address, encodeFunctionData } from 'viem';
 import { baseSepolia } from 'wagmi/chains';
+import { useState, useEffect } from 'react';
 import { REWARDS_CONTRACT_ADDRESS, isSponsorshipEligible } from '@/config/sponsorship';
 
-// Mock ABI for a claim function - you'll replace this with your real contract ABI
-const MOCK_CLAIM_ABI = [
+// ABI for the StrideRewardsDistributor claim function
+const CLAIM_ABI = [
     {
-        name: 'claim',
+        name: 'claimRewards',
         type: 'function',
         stateMutability: 'nonpayable',
-        inputs: [{ name: 'amount', type: 'uint256' }],
+        inputs: [
+            { name: 'epoch', type: 'uint256' },
+            { name: 'amount', type: 'uint256' },
+            { name: 'proof', type: 'bytes32[]' }
+        ],
         outputs: [],
     },
 ] as const;
@@ -32,24 +37,53 @@ interface ClaimRewardsProps {
     onSuccess?: () => void;
 }
 
-export function ClaimRewards({ amount, address, onSuccess }: ClaimRewardsProps) {
+export function ClaimRewards({ amount: propsAmount, address, onSuccess }: ClaimRewardsProps) {
+    const [proof, setProof] = useState<string[]>([]);
+    const [claimAmount, setClaimAmount] = useState<number>(0);
+    const [epoch, setEpoch] = useState<number>(1);
+    const [isLoadingProof, setIsLoadingProof] = useState(false);
+
     // Safety Check: Verify if this contract and function are in our allowlist
-    const isEligible = isSponsorshipEligible(REWARDS_CONTRACT_ADDRESS, 'claim');
+    const isEligible = isSponsorshipEligible(REWARDS_CONTRACT_ADDRESS, 'claimRewards');
+
+    useEffect(() => {
+        const fetchProof = async () => {
+            if (!address) return;
+            setIsLoadingProof(true);
+            try {
+                const res = await fetch(`/api/rewards/proof?address=${address}`);
+                const data = await res.json();
+                if (res.ok) {
+                    setProof(data.proof);
+                    setClaimAmount(data.amount);
+                    setEpoch(data.epoch || 1);
+                }
+            } catch (err) {
+                console.error('Failed to fetch proof:', err);
+            } finally {
+                setIsLoadingProof(false);
+            }
+        };
+
+        fetchProof();
+    }, [address]);
 
     if (!isEligible) {
         console.warn('Attempted to sponsor a non-allowlisted contract or function.');
         return null;
     }
-    // Convert STRIDE amount to wei (18 decimals)
-    const amountInWei = BigInt(Math.floor(amount * 10 ** 18));
+
+    // Use the amount from the proof API to ensure consistency with the Merkle root
+    const amountToClaim = claimAmount || propsAmount;
+    const amountInWei = BigInt(Math.floor(amountToClaim * 10 ** 18));
 
     const calls = [
         {
             to: REWARDS_CONTRACT_ADDRESS,
             data: encodeFunctionData({
-                abi: MOCK_CLAIM_ABI,
-                functionName: 'claim',
-                args: [amountInWei],
+                abi: CLAIM_ABI,
+                functionName: 'claimRewards',
+                args: [BigInt(epoch), amountInWei, proof as any],
             }),
         },
     ];
@@ -61,7 +95,9 @@ export function ClaimRewards({ amount, address, onSuccess }: ClaimRewardsProps) 
         }
     };
 
-    if (amount <= 0) return null;
+    if (amountToClaim <= 0 || (isLoadingProof && proof.length === 0)) {
+        return null;
+    }
 
     return (
         <div className="flex flex-col items-center w-full max-w-xs mt-6">
@@ -71,8 +107,9 @@ export function ClaimRewards({ amount, address, onSuccess }: ClaimRewardsProps) 
                 onStatus={handleOnStatus}
             >
                 <TransactionButton
-                    className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black py-4 rounded-xl shadow-[0_0_20px_rgba(212,255,0,0.3)] transition-all hover:scale-[1.02]"
-                    text={`CLAIM ${amount.toFixed(2)} STRIDE (GAS-FREE)`}
+                    disabled={isLoadingProof || proof.length === 0}
+                    className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black py-4 rounded-xl shadow-[0_0_20px_rgba(212,255,0,0.3)] transition-all hover:scale-[1.02] disabled:opacity-50"
+                    text={isLoadingProof ? "FETCHING PROOF..." : `CLAIM ${amountToClaim.toFixed(2)} STRIDE (GAS-FREE)`}
                 />
                 <TransactionStatus>
                     <TransactionStatusLabel />
