@@ -31,6 +31,11 @@ export default function OnchainProviders({ children }: { children: ReactNode }) 
                 <OnchainKitProvider
                     apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
                     chain={base}
+                    config={{
+                        appearance: {
+                            mode: 'auto',
+                        },
+                    }}
                 >
                     {children}
                 </OnchainKitProvider>
@@ -38,3 +43,4 @@ export default function OnchainProviders({ children }: { children: ReactNode }) 
         </WagmiProvider>
     );
 }
+
