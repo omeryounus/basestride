@@ -11,7 +11,7 @@ import { Address } from 'viem';
  */
 
 export const REWARDS_CONTRACT_ADDRESS = '0x6c219eAd8e558eEc08837F13D9ae5D5F1396ebfa' as Address;
-export const STRIDE_SHOES_ADDRESS = '0xA4a89A8E1b554Eaff54669E5adE1353147a87002' as Address;
+export const STRIDE_SHOES_ADDRESS = '0xCDE8CFe4b2b6d0011cc04C0fa09A860e35ef9f0F' as Address;
 
 export const SPONSORSHIP_ALLOWLIST = {
     // Allowlist by contract address
