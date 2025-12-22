@@ -18,6 +18,7 @@ import { ClaimRewards } from "@/components/dashboard/ClaimRewards";
 import { type Address } from "viem";
 import { useAccount } from "wagmi";
 import { useActivity } from "@/hooks/useActivity";
+import { ShareProgress } from "@/components/social/ShareProgress";
 
 type View = 'RUN' | 'LEADERBOARD' | 'MARKET';
 
@@ -135,8 +136,15 @@ export default function Home() {
                 />
               )}
 
+              <div className="w-full mt-4">
+                <ShareProgress
+                  steps={steps}
+                  earned={(steps / 1000).toFixed(2)}
+                />
+              </div>
+
               {/* Action Button */}
-              <div className="mt-8 z-10">
+              <div className="mt-10 z-10 w-full flex flex-col items-center">
                 <Button
                   onClick={toggleTracking}
                   className={cn(
