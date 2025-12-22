@@ -11,8 +11,8 @@
         "iconUrl": "https://basestride.vercel.app/icon.png",
         "splashImageUrl": "https://basestride.vercel.app/splash.png",
         "splashBackgroundColor": "#0052FF",
-        "subtitle": "Track your steps and earn rewards on Base",
-        "description": "Turn your daily steps into crypto rewards. BaseStride is a move-to-earn fitness app that tracks your steps and rewards you with $STRIDE tokens on Base.",
+        "subtitle": "BaseStride Move to Earn",
+        "description": "Turn your daily steps into rewards. BaseStride tracks your steps and rewards you for staying active.",
         "screenshotUrls": [
             "https://basestride.vercel.app/screenshot-1.png",
             "https://basestride.vercel.app/screenshot-2.png",
@@ -26,8 +26,8 @@
         ],
         "heroImageUrl": "https://basestride.vercel.app/og-image.png",
         "tagline": "Move to earn on Base",
-        "ogTitle": "BaseStride | Move-to-Earn",
-        "ogDescription": "Earn $STRIDE for every step on Base. Track your steps, compete on the leaderboard, and get rewarded for staying active.",
+        "ogTitle": "BaseStride Move to Earn",
+        "ogDescription": "Earn rewards for every step on Base. Track your steps and get rewarded for staying active.",
         "ogImageUrl": "https://basestride.vercel.app/og-image.png"
     }
 }
