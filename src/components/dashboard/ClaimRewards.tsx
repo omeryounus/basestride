@@ -107,7 +107,7 @@ export function ClaimRewards({ amount: propsAmount, address, onSuccess }: ClaimR
                 onStatus={handleOnStatus}
                 capabilities={{
                     paymasterService: {
-                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL,
+                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL!,
                     },
                 }}
             >

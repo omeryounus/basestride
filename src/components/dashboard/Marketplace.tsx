@@ -102,7 +102,7 @@ export default function Marketplace() {
                                 }}
                                 capabilities={{
                                     paymasterService: {
-                                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL,
+                                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL!,
                                     },
                                 }}
                             >
