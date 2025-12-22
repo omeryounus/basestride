@@ -30,12 +30,12 @@ export default function OnchainProviders({ children }: { children: ReactNode }) 
             <QueryClientProvider client={queryClient}>
                 <OnchainKitProvider
                     apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-                    chain={base}
+                    chain={baseSepolia}
                     config={{
                         appearance: {
                             mode: 'auto',
                         },
-                        paymaster: `${process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL}`,
+                        paymaster: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL || '',
                     }}
                 >
                     {children}
