@@ -105,6 +105,11 @@ export function ClaimRewards({ amount: propsAmount, address, onSuccess }: ClaimR
                 chainId={baseSepolia.id}
                 calls={calls}
                 onStatus={handleOnStatus}
+                capabilities={{
+                    paymasterService: {
+                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL,
+                    },
+                }}
             >
                 <TransactionButton
                     disabled={isLoadingProof || proof.length === 0}

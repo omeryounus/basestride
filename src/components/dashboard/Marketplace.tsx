@@ -100,6 +100,11 @@ export default function Marketplace() {
                                         syncShoe(item.enumValue);
                                     }
                                 }}
+                                capabilities={{
+                                    paymasterService: {
+                                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL,
+                                    },
+                                }}
                             >
                                 <TransactionButton
                                     className="w-full bg-blue-600 hover:bg-blue-500 font-bold py-4 rounded-xl"
