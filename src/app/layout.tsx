@@ -16,10 +16,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "BaseStride Move to Earn",
-  description: "Earn rewards for every step on Base",
+  description: "Turn your daily steps into rewards. BaseStride tracks your steps and rewards you for staying active.",
   openGraph: {
     title: "BaseStride Move to Earn",
-    description: "Earn rewards for every step on Base",
+    description: "Earn rewards for every step on Base. Track your steps and get rewarded for staying active.",
     images: ["https://basestride.vercel.app/og-image.png"],
   },
   other: {
