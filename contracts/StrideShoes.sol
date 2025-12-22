@@ -42,9 +42,14 @@ contract StrideShoes is ERC721, ERC721Enumerable, Ownable {
     }
 
     /**
-     * @dev Admin/Marketplace minting function
+     * @dev Admin/Marketplace minting function - Public for testing phase
      */
-    function mint(address to, Rarity rarity) external onlyOwner returns (uint256) {
+    function mint(address to, Rarity rarity) external returns (uint256) {
+        // In production, you'd check for a payment or whitelist
+        // For testing, only allow Common (0) to be minted freely
+        if (msg.sender != owner()) {
+            require(rarity == Rarity.Common, "Only owner can mint higher rarities");
+        }
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
 

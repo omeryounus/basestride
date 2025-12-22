@@ -15,6 +15,7 @@ import { type Address, encodeFunctionData } from 'viem';
 import { baseSepolia } from 'wagmi/chains';
 import { useState, useEffect } from 'react';
 import { REWARDS_CONTRACT_ADDRESS, isSponsorshipEligible } from '@/config/sponsorship';
+import { Button } from '@/components/ui/button';
 
 // ABI for the StrideRewardsDistributor claim function
 const CLAIM_ABI = [
@@ -95,37 +96,48 @@ export function ClaimRewards({ amount: propsAmount, address, onSuccess }: ClaimR
         }
     };
 
+    const [isReadyToClaim, setIsReadyToClaim] = useState(false);
+
     if (amountToClaim <= 0 || (isLoadingProof && proof.length === 0)) {
         return null;
     }
 
     return (
         <div className="flex flex-col items-center w-full max-w-xs mt-6">
-            <Transaction
-                chainId={baseSepolia.id}
-                calls={calls}
-                onStatus={handleOnStatus}
-                capabilities={{
-                    paymasterService: {
-                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL!,
-                    },
-                }}
-            >
-                <TransactionButton
+            {!isReadyToClaim ? (
+                <Button
+                    onClick={() => setIsReadyToClaim(true)}
                     disabled={isLoadingProof || proof.length === 0}
-                    className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black py-4 rounded-xl shadow-[0_0_20px_rgba(212,255,0,0.3)] transition-all hover:scale-[1.02] disabled:opacity-50"
-                    text={isLoadingProof ? "FETCHING PROOF..." : `CLAIM ${amountToClaim.toFixed(2)} STRIDE (GAS-FREE)`}
-                />
-                <TransactionStatus>
-                    <TransactionStatusLabel />
-                    <TransactionStatusAction />
-                </TransactionStatus>
-                <TransactionToast>
-                    <TransactionToastIcon />
-                    <TransactionToastLabel />
-                    <TransactionToastAction />
-                </TransactionToast>
-            </Transaction>
+                    className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black py-4 rounded-xl shadow-[0_0_20px_rgba(212,255,0,0.3)] transition-all"
+                >
+                    {isLoadingProof ? "FETCHING PROOF..." : `CLAIM ${amountToClaim.toFixed(2)} STRIDE`}
+                </Button>
+            ) : (
+                <Transaction
+                    chainId={baseSepolia.id}
+                    calls={calls}
+                    onStatus={handleOnStatus}
+                    capabilities={{
+                        paymasterService: {
+                            url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL!,
+                        },
+                    }}
+                >
+                    <TransactionButton
+                        className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black py-4 rounded-xl"
+                        text="CONFIRM CLAIM (GAS-FREE)"
+                    />
+                    <TransactionStatus>
+                        <TransactionStatusLabel />
+                        <TransactionStatusAction />
+                    </TransactionStatus>
+                    <TransactionToast>
+                        <TransactionToastIcon />
+                        <TransactionToastLabel />
+                        <TransactionToastAction />
+                    </TransactionToast>
+                </Transaction>
+            )}
 
             <p className="mt-2 text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
                 Sponsored by BaseStride
