@@ -9,6 +9,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+    Transaction,
+    TransactionButton,
+    TransactionStatus,
+    TransactionStatusLabel,
+    TransactionStatusAction,
+    TransactionToast,
+    TransactionToastIcon,
+    TransactionToastLabel,
+    TransactionToastAction,
+} from '@coinbase/onchainkit/transaction';
+import { encodeFunctionData } from 'viem';
+import { baseSepolia } from 'wagmi/chains';
 
 const MARKET_ITEMS = [
     { rarity: 'Common', price: 'Free', enumValue: 0, description: 'Basic shoes for every runner.' },
@@ -18,37 +31,15 @@ const MARKET_ITEMS = [
 
 export default function Marketplace() {
     const { address } = useAccount();
-    const { writeContract, data: hash, isPending: isMinting } = useWriteContract();
-    const { isLoading: isWaiting } = useWaitForTransactionReceipt({ hash });
     const [selectedRarity, setSelectedRarity] = useState<number | null>(null);
 
-    const handleBuy = async (rarity: number) => {
-        if (!address) {
-            toast.error('Please connect your wallet first');
-            return;
-        }
-
-        setSelectedRarity(rarity);
-
-        try {
-            writeContract({
-                address: STRIDE_SHOES_ADDRESS,
-                abi: StrideShoesABI.abi,
-                functionName: 'mint',
-                args: [address, rarity],
-            });
-        } catch (error) {
-            console.error('Minting error:', error);
-            toast.error('Failed to initiate purchase');
+    const handleOnStatus = (status: any) => {
+        console.log('Transaction Status:', status);
+        if (status.statusName === 'success') {
+            syncShoe();
         }
     };
 
-    // Effect to sync shoe to backend after transaction success
-    React.useEffect(() => {
-        if (hash && !isWaiting && selectedRarity !== null) {
-            syncShoe();
-        }
-    }, [hash, isWaiting]);
 
     const syncShoe = async () => {
         try {
@@ -101,17 +92,35 @@ export default function Marketplace() {
                             <p className="text-sm text-slate-400 min-h-[40px]">
                                 {item.description}
                             </p>
-                            <Button
-                                onClick={() => handleBuy(item.enumValue)}
-                                disabled={isMinting || isWaiting}
-                                className="w-full bg-blue-600 hover:bg-blue-500 font-bold"
+                            <Transaction
+                                chainId={baseSepolia.id}
+                                calls={[
+                                    {
+                                        to: STRIDE_SHOES_ADDRESS,
+                                        data: encodeFunctionData({
+                                            abi: StrideShoesABI.abi,
+                                            functionName: 'mint',
+                                            args: [address, item.enumValue],
+                                        }),
+                                    },
+                                ]}
+                                onStatus={handleOnStatus}
                             >
-                                {isMinting || isWaiting ? (
-                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> MINTING...</>
-                                ) : (
-                                    <>BUY NOW <Sparkles className="w-4 h-4 ml-2" /></>
-                                )}
-                            </Button>
+                                <TransactionButton
+                                    onClick={() => setSelectedRarity(item.enumValue)}
+                                    className="w-full bg-blue-600 hover:bg-blue-500 font-bold py-4 rounded-xl"
+                                    text={item.price === 'Free' ? "MINT FREE SHOE" : `BUY FOR ${item.price}`}
+                                />
+                                <TransactionStatus>
+                                    <TransactionStatusLabel />
+                                    <TransactionStatusAction />
+                                </TransactionStatus>
+                                <TransactionToast>
+                                    <TransactionToastIcon />
+                                    <TransactionToastLabel />
+                                    <TransactionToastAction />
+                                </TransactionToast>
+                            </Transaction>
                         </CardContent>
                     </Card>
                 ))}
