@@ -31,17 +31,8 @@ const MARKET_ITEMS = [
 
 export default function Marketplace() {
     const { address } = useAccount();
-    const [selectedRarity, setSelectedRarity] = useState<number | null>(null);
 
-    const handleOnStatus = (status: any) => {
-        console.log('Transaction Status:', status);
-        if (status.statusName === 'success') {
-            syncShoe();
-        }
-    };
-
-
-    const syncShoe = async () => {
+    const syncShoe = async (rarityValue: number) => {
         try {
             // Note: In a real app, we'd fetch the TokenId from events
             // For now, we'll use a hack or wait for the user to refresh
@@ -52,7 +43,7 @@ export default function Marketplace() {
                 body: JSON.stringify({
                     address,
                     tokenId: Date.now(), // Placeholder until we can reliably parse events
-                    rarity: MARKET_ITEMS[selectedRarity!].rarity
+                    rarity: MARKET_ITEMS[rarityValue].rarity
                 })
             });
 
@@ -104,10 +95,13 @@ export default function Marketplace() {
                                         }),
                                     },
                                 ]}
-                                onStatus={handleOnStatus}
+                                onStatus={(status) => {
+                                    if (status.statusName === 'success') {
+                                        syncShoe(item.enumValue);
+                                    }
+                                }}
                             >
                                 <TransactionButton
-                                    onClick={() => setSelectedRarity(item.enumValue)}
                                     className="w-full bg-blue-600 hover:bg-blue-500 font-bold py-4 rounded-xl"
                                     text={item.price === 'Free' ? "MINT FREE SHOE" : `BUY FOR ${item.price}`}
                                 />
