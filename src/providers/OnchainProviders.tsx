@@ -3,14 +3,14 @@
 import { ReactNode } from 'react';
 import { OnchainKitProvider } from '@coinbase/onchainkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { base, baseSepolia } from 'wagmi/chains';
+import { baseSepolia } from 'wagmi/chains';
 import { http, createConfig, WagmiProvider } from 'wagmi';
 import { coinbaseWallet } from 'wagmi/connectors';
 
 const queryClient = new QueryClient();
 
 const config = createConfig({
-    chains: [base, baseSepolia],
+    chains: [baseSepolia],
     connectors: [
         coinbaseWallet({
             appName: 'BaseStride',
@@ -18,7 +18,6 @@ const config = createConfig({
         }),
     ],
     transports: {
-        [base.id]: http(),
         [baseSepolia.id]: http(),
     },
     ssr: true,
