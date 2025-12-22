@@ -15,8 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BaseStride | Move-to-Earn",
-  description: "Earn $STRIDE for every step on Base.",
+  title: "BaseStride Move to Earn",
+  description: "Earn rewards for every step on Base",
+  openGraph: {
+    title: "BaseStride Move to Earn",
+    description: "Earn rewards for every step on Base",
+    images: ["https://basestride.vercel.app/og-image.png"],
+  },
   other: {
     'base:app_id': '69479cedd19763ca26ddc7e7',
     'fc:miniapp': JSON.stringify({
