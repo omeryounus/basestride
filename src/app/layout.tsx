@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BaseStride Move to Earn",
+  title: "Run and Earn Rewards",
   description: "Turn your daily steps into rewards. BaseStride tracks your steps and rewards you for staying active.",
   openGraph: {
     title: "Run and Earn Rewards",
