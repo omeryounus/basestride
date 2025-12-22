@@ -18,10 +18,18 @@ async function main() {
     const distributorAddress = await distributor.getAddress();
     console.log(`StrideRewardsDistributor deployed to: ${distributorAddress}`);
 
+    // 3. Deploy StrideShoes
+    const StrideShoes = await ethers.getContractFactory("StrideShoes");
+    const shoes = await StrideShoes.deploy();
+    await shoes.waitForDeployment();
+    const shoesAddress = await shoes.getAddress();
+    console.log(`StrideShoes deployed to: ${shoesAddress}`);
+
     console.log("\nDeployment complete!");
     console.log("-------------------");
     console.log(`NEXT_PUBLIC_STRIDE_TOKEN_ADDRESS=${tokenAddress}`);
     console.log(`NEXT_PUBLIC_REWARDS_DISTRIBUTOR_ADDRESS=${distributorAddress}`);
+    console.log(`NEXT_PUBLIC_STRIDE_SHOES_ADDRESS=${shoesAddress}`);
 }
 
 main().catch((error) => {

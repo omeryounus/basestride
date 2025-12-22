@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { StrideRewardsDistributor } from "./StrideRewardsDistributor";
+export type { StrideShoes } from "./StrideShoes";
 export type { StrideToken } from "./StrideToken";

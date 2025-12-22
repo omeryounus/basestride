@@ -12,7 +12,8 @@ import { Coins, Zap, MapPin, Trophy, Play, Pause, ShoppingBag } from "lucide-rea
 import { useState, useEffect } from "react";
 import { WalletWrapper } from "@/components/WalletWrapper";
 import { Leaderboard } from "@/components/dashboard/Leaderboard";
-import { MarketPlaceholder } from "@/components/dashboard/MarketPlaceholder";
+import Marketplace from "@/components/dashboard/Marketplace";
+import ShoeInventory from "@/components/dashboard/ShoeInventory";
 import { ClaimRewards } from "@/components/dashboard/ClaimRewards";
 import { type Address } from "viem";
 import { useAccount } from "wagmi";
@@ -33,11 +34,14 @@ export default function Home() {
   const { address } = useAccount();
   const { initUser, saveSteps, getUserStats } = useActivity();
   const [balance, setBalance] = useState<number>(0);
+  const [energy, setEnergy] = useState<number>(0);
+  const [maxEnergy, setMaxEnergy] = useState<number>(20);
 
   const fetchStats = async (addr: string) => {
     const { data } = await getUserStats(addr);
     if (data) {
       setBalance(data.total_earned_tokens || 0);
+      setEnergy(data.energy || 0);
     }
   };
 
@@ -102,10 +106,13 @@ export default function Home() {
             <div className="flex flex-col items-end w-24">
               <div className="flex justify-between w-full text-[10px] items-center mb-1">
                 <Zap size={12} className="text-yellow-400 fill-current" />
-                <span className="font-mono">8.5/10.0</span>
+                <span className="font-mono">{energy}/{maxEnergy}</span>
               </div>
               <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-yellow-400 w-[85%]" />
+                <div
+                  className="h-full bg-yellow-400 transition-all duration-500"
+                  style={{ width: `${(energy / maxEnergy) * 100}%` }}
+                />
               </div>
             </div>
           </div>
@@ -154,6 +161,13 @@ export default function Home() {
                   </p>
                 )}
               </div>
+
+              {/* Shoe Inventory */}
+              {!isTracking && address && (
+                <div className="w-full mt-12 mb-8">
+                  <ShoeInventory />
+                </div>
+              )}
             </div>
           )}
 
@@ -161,7 +175,11 @@ export default function Home() {
           {currentView === 'LEADERBOARD' && <Leaderboard />}
 
           {/* MARKET VIEW */}
-          {currentView === 'MARKET' && <MarketPlaceholder />}
+          {currentView === 'MARKET' && (
+            <div className="w-full max-w-4xl">
+              <Marketplace />
+            </div>
+          )}
 
         </div>
 

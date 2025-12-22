@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export { StrideRewardsDistributor__factory } from "./StrideRewardsDistributor__factory";
+export { StrideShoes__factory } from "./StrideShoes__factory";
 export { StrideToken__factory } from "./StrideToken__factory";

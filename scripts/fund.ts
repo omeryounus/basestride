@@ -2,8 +2,8 @@ import pkg from "hardhat";
 const { ethers } = pkg;
 
 async function main() {
-    const TOKEN_ADDRESS = "0xF1101Aac0Bd82101e939D8696617ee47AA910471";
-    const DISTRIBUTOR_ADDRESS = "0x65bED2A902D6d76012D7826d2394151c81E54Abc";
+    const TOKEN_ADDRESS = "0xe5559e464FBF6Ea027E6C4821aFAB40a7390Aca8";
+    const DISTRIBUTOR_ADDRESS = "0x6c219eAd8e558eEc08837F13D9ae5D5F1396ebfa";
 
     console.log(`Funding Distributor ${DISTRIBUTOR_ADDRESS} with tokens from ${TOKEN_ADDRESS}...`);
 
