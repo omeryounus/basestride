@@ -14,6 +14,7 @@ import {
 import { type Address, encodeFunctionData } from 'viem';
 import { baseSepolia } from 'wagmi/chains';
 import { useState, useEffect } from 'react';
+import { useReadContract } from 'wagmi';
 import { REWARDS_CONTRACT_ADDRESS, isSponsorshipEligible } from '@/config/sponsorship';
 import { Button } from '@/components/ui/button';
 
@@ -30,6 +31,16 @@ const CLAIM_ABI = [
         ],
         outputs: [],
     },
+    {
+        name: 'hasClaimed',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [
+            { name: '', type: 'address' },
+            { name: '', type: 'uint256' }
+        ],
+        outputs: [{ name: '', type: 'bool' }],
+    }
 ] as const;
 
 interface ClaimRewardsProps {
@@ -43,6 +54,17 @@ export function ClaimRewards({ amount: propsAmount, address, onSuccess }: ClaimR
     const [claimAmount, setClaimAmount] = useState<number>(0);
     const [epoch, setEpoch] = useState<number>(1);
     const [isLoadingProof, setIsLoadingProof] = useState(false);
+
+    // Check if user has already claimed this epoch on-chain
+    const { data: alreadyClaimedOnChain, isLoading: isCheckingClaimed } = useReadContract({
+        address: REWARDS_CONTRACT_ADDRESS,
+        abi: CLAIM_ABI,
+        functionName: 'hasClaimed',
+        args: [address as Address, BigInt(epoch)],
+        query: {
+            enabled: !!address && !!epoch,
+        }
+    });
 
     // Safety Check: Verify if this contract and function are in our allowlist
     const isEligible = isSponsorshipEligible(REWARDS_CONTRACT_ADDRESS, 'claimRewards');
@@ -107,10 +129,12 @@ export function ClaimRewards({ amount: propsAmount, address, onSuccess }: ClaimR
             {!isReadyToClaim ? (
                 <Button
                     onClick={() => setIsReadyToClaim(true)}
-                    disabled={isLoadingProof || proof.length === 0}
+                    disabled={isLoadingProof || proof.length === 0 || alreadyClaimedOnChain || isCheckingClaimed}
                     className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-black py-4 rounded-xl shadow-[0_0_20px_rgba(212,255,0,0.3)] transition-all"
                 >
-                    {isLoadingProof ? "FETCHING PROOF..." : `CLAIM ${amountToClaim.toFixed(2)} STRIDE`}
+                    {isCheckingClaimed ? "CHECKING STATUS..." :
+                        alreadyClaimedOnChain ? "ALREADY CLAIMED" :
+                            isLoadingProof ? "FETCHING PROOF..." : `CLAIM ${amountToClaim.toFixed(2)} STRIDE`}
                 </Button>
             ) : (
                 <Transaction

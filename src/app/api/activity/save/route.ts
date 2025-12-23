@@ -106,6 +106,21 @@ export async function POST(request: Request) {
 
         if (userUpdateError) throw userUpdateError;
 
+        // 4. Log transaction
+        const { error: txError } = await supabase
+            .from('transactions')
+            .insert({
+                wallet_address: address,
+                type: 'REWARD',
+                amount: tokensEarned,
+                description: `Earned ${tokensEarned} STRIDE for ${steps} steps`
+            });
+
+        if (txError) {
+            console.error('Error logging transaction:', txError);
+            // Don't throw here to avoid failing the whole request
+        }
+
         return NextResponse.json({
             success: true,
             earned: tokensEarned,

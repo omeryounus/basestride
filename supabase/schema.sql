@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
   total_earned_tokens DECIMAL(18, 8) DEFAULT 0,
   energy INTEGER DEFAULT 20, -- Max initial energy
   last_energy_regen TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  active_shoe_id UUID -- References nft_shoes.id
+  active_shoe_id UUID, -- References nft_shoes.id
+  display_name TEXT,
+  avatar_url TEXT
 );
 
 -- Daily activities: Aggregate steps per day for rewards
@@ -80,3 +82,17 @@ CREATE POLICY "Users can manage their own activities" ON daily_activities
 
 CREATE POLICY "Users can manage their own sessions" ON activity_sessions
   FOR ALL USING (true);
+
+-- Transactions table: Log all financial/reward events
+CREATE TABLE IF NOT EXISTS transactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  wallet_address TEXT REFERENCES users(wallet_address) ON DELETE CASCADE,
+  type TEXT NOT NULL, -- 'REWARD', 'CLAIM', 'PURCHASE'
+  amount DECIMAL(18, 8) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view their own transactions" ON transactions
+  FOR SELECT USING (true);

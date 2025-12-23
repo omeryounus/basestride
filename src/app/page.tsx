@@ -1,5 +1,7 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+
 import { usePedometer } from "@/hooks/usePedometer";
 import { StepCounter } from "@/components/dashboard/StepCounter";
 import { StepSimulator } from "@/components/debug/StepSimulator";
@@ -8,7 +10,7 @@ import { WelcomeModal } from "@/components/WelcomeModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
-import { Coins, Zap, MapPin, Trophy, Play, Pause, ShoppingBag } from "lucide-react";
+import { Coins, Zap, MapPin, Trophy, Play, Pause, ShoppingBag, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { WalletWrapper } from "@/components/WalletWrapper";
 import { Leaderboard } from "@/components/dashboard/Leaderboard";
@@ -19,8 +21,10 @@ import { type Address } from "viem";
 import { useAccount } from "wagmi";
 import { useActivity } from "@/hooks/useActivity";
 import { ShareProgress } from "@/components/social/ShareProgress";
+import { ProfilePage } from "@/components/dashboard/ProfilePage";
+import { TransactionHistory } from "@/components/dashboard/TransactionHistory";
 
-type View = 'RUN' | 'LEADERBOARD' | 'MARKET';
+type View = 'RUN' | 'LEADERBOARD' | 'MARKET' | 'PROFILE';
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<View>('RUN');
@@ -37,6 +41,11 @@ export default function Home() {
   const [balance, setBalance] = useState<number>(0);
   const [energy, setEnergy] = useState<number>(0);
   const [maxEnergy, setMaxEnergy] = useState<number>(20);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchStats = async (addr: string) => {
     const { data } = await getUserStats(addr);
@@ -90,32 +99,34 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Token Balance */}
-            <div className="flex flex-col items-end">
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-secondary/20 rounded-full border border-secondary/30">
-                <Coins size={14} className="text-secondary opacity-80" />
-                <span className="text-xs font-black tracking-tight text-secondary">
-                  {balance.toFixed(2)} <span className="opacity-70">STRIDE</span>
-                </span>
+            {mounted && (
+              <div className="flex flex-col items-end">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-secondary/20 rounded-full border border-secondary/30">
+                  <Coins size={14} className="text-secondary opacity-80" />
+                  <span className="text-xs font-black tracking-tight text-secondary">
+                    {balance.toFixed(2)} <span className="opacity-70">STRIDE</span>
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Theme Toggle */}
             <ThemeToggle />
 
-            {/* Energy Bar */}
-            <div className="flex flex-col items-end w-24">
-              <div className="flex justify-between w-full text-[10px] items-center mb-1">
-                <Zap size={12} className="text-yellow-400 fill-current" />
-                <span className="font-mono">{energy}/{maxEnergy}</span>
+            {mounted && (
+              <div className="flex flex-col items-end w-24">
+                <div className="flex justify-between w-full text-[10px] items-center mb-1">
+                  <Zap size={12} className="text-yellow-400 fill-current" />
+                  <span className="font-mono">{energy}/{maxEnergy}</span>
+                </div>
+                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-yellow-400 transition-all duration-500"
+                    style={{ width: `${(energy / maxEnergy) * 100}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-yellow-400 transition-all duration-500"
-                  style={{ width: `${(energy / maxEnergy) * 100}%` }}
-                />
-              </div>
-            </div>
+            )}
           </div>
         </header>
 
@@ -128,7 +139,7 @@ export default function Home() {
               <StepCounter steps={steps} goal={10000} />
 
               {/* Claim Rewards Section */}
-              {balance > 0 && !isTracking && address && (
+              {mounted && balance > 0 && !isTracking && address && (
                 <ClaimRewards
                   amount={balance}
                   address={address as Address}
@@ -163,6 +174,19 @@ export default function Home() {
                   )}
                 </Button>
 
+                {isTracking && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-6 flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full"
+                  >
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
+                    <span className="text-[10px] font-black tracking-tighter text-green-500 uppercase">
+                      Background Tracking Active
+                    </span>
+                  </motion.div>
+                )}
+
                 {!isTracking && (
                   <p className="text-center text-xs text-muted-foreground mt-4 animate-pulse">
                     Press START to earn
@@ -171,7 +195,7 @@ export default function Home() {
               </div>
 
               {/* Shoe Inventory */}
-              {!isTracking && address && (
+              {mounted && !isTracking && address && (
                 <div className="w-full mt-12 mb-8">
                   <ShoeInventory />
                 </div>
@@ -186,6 +210,19 @@ export default function Home() {
           {currentView === 'MARKET' && (
             <div className="w-full max-w-4xl">
               <Marketplace />
+            </div>
+          )}
+          {/* PROFILE VIEW */}
+          {mounted && currentView === 'PROFILE' && (
+            <div className="w-full max-w-md pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <ProfilePage
+                address={address || ""}
+                onUpdate={() => address && fetchStats(address)}
+              />
+
+              <div className="mt-12 px-4">
+                <TransactionHistory address={address || ""} />
+              </div>
             </div>
           )}
 
@@ -229,6 +266,17 @@ export default function Home() {
               <div className="w-6 h-6 rounded bg-gradient-to-br from-secondary to-green-400 opacity-70" />
             )}
             <span className="text-[10px] font-bold">MARKET</span>
+          </button>
+
+          <button
+            onClick={() => setCurrentView('PROFILE')}
+            className={cn(
+              "flex flex-col items-center gap-1 transition-all duration-300",
+              currentView === 'PROFILE' ? "text-primary scale-110" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <User size={24} className={currentView === 'PROFILE' ? "drop-shadow-[0_0_8px_rgba(0,82,255,0.5)]" : ""} />
+            <span className="text-[10px] font-bold">PROFILE</span>
           </button>
 
         </nav>

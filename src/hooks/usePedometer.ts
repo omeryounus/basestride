@@ -10,12 +10,39 @@ export const usePedometer = () => {
     const [error, setError] = useState<string | null>(null);
     const detectorRef = useRef<StepDetector>(new StepDetector());
 
+    // Persist steps to localStorage to prevent loss on refresh
+    useEffect(() => {
+        const savedSteps = localStorage.getItem('basestride_temp_steps');
+        if (savedSteps && !isTracking) {
+            setSteps(parseInt(savedSteps));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isTracking) {
+            localStorage.setItem('basestride_temp_steps', steps.toString());
+        }
+    }, [steps, isTracking]);
+
+    // Handle Page Visibility to "resume" or "keep alive"
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                console.log("App in background - maintaining state");
+            } else {
+                console.log("App in foreground - checking state");
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, []);
+
     const handleMotion = useCallback((event: DeviceMotionEvent) => {
         if (!event.accelerationIncludingGravity) return;
 
         const { x, y, z } = event.accelerationIncludingGravity;
 
-        // Some devices return null
         if (x === null || y === null || z === null) return;
 
         const data: MotionData = { x, y, z };
@@ -34,10 +61,12 @@ export const usePedometer = () => {
     const stopTracking = useCallback(() => {
         window.removeEventListener('devicemotion', handleMotion);
         setIsTracking(false);
+        localStorage.removeItem('basestride_temp_steps');
     }, [handleMotion]);
 
     const resetSteps = useCallback(() => {
         setSteps(0);
+        localStorage.removeItem('basestride_temp_steps');
     }, []);
 
     const requestPermission = useCallback(async () => {

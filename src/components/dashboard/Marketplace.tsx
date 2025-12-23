@@ -83,43 +83,52 @@ export default function Marketplace() {
                             <p className="text-sm text-slate-400 min-h-[40px]">
                                 {item.description}
                             </p>
-                            <Transaction
-                                chainId={baseSepolia.id}
-                                calls={[
-                                    {
-                                        to: STRIDE_SHOES_ADDRESS,
-                                        data: encodeFunctionData({
-                                            abi: StrideShoesABI.abi,
-                                            functionName: 'mint',
-                                            args: [address, item.enumValue],
-                                        }),
-                                    },
-                                ]}
-                                onStatus={(status) => {
-                                    if (status.statusName === 'success') {
-                                        syncShoe(item.enumValue);
-                                    }
-                                }}
-                                capabilities={{
-                                    paymasterService: {
-                                        url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL!,
-                                    },
-                                }}
-                            >
-                                <TransactionButton
-                                    className="w-full bg-blue-600 hover:bg-blue-500 font-bold py-4 rounded-xl"
-                                    text={item.price === 'Free' ? "MINT FREE SHOE" : `BUY FOR ${item.price}`}
-                                />
-                                <TransactionStatus>
-                                    <TransactionStatusLabel />
-                                    <TransactionStatusAction />
-                                </TransactionStatus>
-                                <TransactionToast>
-                                    <TransactionToastIcon />
-                                    <TransactionToastLabel />
-                                    <TransactionToastAction />
-                                </TransactionToast>
-                            </Transaction>
+                            {address ? (
+                                <Transaction
+                                    chainId={baseSepolia.id}
+                                    calls={[
+                                        {
+                                            to: STRIDE_SHOES_ADDRESS,
+                                            data: encodeFunctionData({
+                                                abi: StrideShoesABI.abi,
+                                                functionName: 'mint',
+                                                args: [address, item.enumValue],
+                                            }),
+                                        },
+                                    ]}
+                                    onStatus={(status) => {
+                                        if (status.statusName === 'success') {
+                                            syncShoe(item.enumValue);
+                                        }
+                                    }}
+                                    capabilities={{
+                                        paymasterService: {
+                                            url: process.env.NEXT_PUBLIC_CDP_PAYMASTER_URL!,
+                                        },
+                                    }}
+                                >
+                                    <TransactionButton
+                                        className="w-full bg-blue-600 hover:bg-blue-500 font-bold py-4 rounded-xl"
+                                        text={item.price === 'Free' ? "MINT FREE SHOE" : `BUY FOR ${item.price}`}
+                                    />
+                                    <TransactionStatus>
+                                        <TransactionStatusLabel />
+                                        <TransactionStatusAction />
+                                    </TransactionStatus>
+                                    <TransactionToast>
+                                        <TransactionToastIcon />
+                                        <TransactionToastLabel />
+                                        <TransactionToastAction />
+                                    </TransactionToast>
+                                </Transaction>
+                            ) : (
+                                <Button
+                                    disabled
+                                    className="w-full bg-slate-800 text-slate-500 font-bold py-4 rounded-xl"
+                                >
+                                    CONNECT WALLET TO MINT
+                                </Button>
+                            )}
                         </CardContent>
                     </Card>
                 ))}
