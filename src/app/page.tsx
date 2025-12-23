@@ -92,6 +92,24 @@ export default function Home() {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
+        {/* Ambient Particles */}
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.1, 0.3, 0.1]
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            y: [0, 20, 0],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute top-1/2 right-10 w-48 h-48 bg-secondary/10 rounded-full blur-3xl pointer-events-none"
+        />
+
         {/* Header */}
         <header className="px-6 py-4 flex justify-between items-center z-10 relative">
           <div className="flex items-center gap-3">
@@ -136,6 +154,13 @@ export default function Home() {
           {/* RUN VIEW */}
           {currentView === 'RUN' && (
             <div className="flex flex-col items-center w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
+              <div className="w-full mb-8">
+                <ShareProgress
+                  steps={steps}
+                  earned={(steps / 1000).toFixed(2)}
+                />
+              </div>
+
               <StepCounter steps={steps} goal={10000} />
 
               {/* Claim Rewards Section */}
@@ -147,19 +172,12 @@ export default function Home() {
                 />
               )}
 
-              <div className="w-full mt-4">
-                <ShareProgress
-                  steps={steps}
-                  earned={(steps / 1000).toFixed(2)}
-                />
-              </div>
-
               {/* Action Button */}
               <div className="mt-10 z-10 w-full flex flex-col items-center">
                 <Button
                   onClick={toggleTracking}
                   className={cn(
-                    "h-16 px-12 rounded-full text-lg font-black tracking-wide shadow-[0_0_30px_rgba(0,82,255,0.4)] transition-all hover:scale-105 active:scale-95",
+                    "h-20 px-16 rounded-full text-xl font-black tracking-widest shadow-[0_0_50px_rgba(0,82,255,0.3)] transition-all hover:scale-110 active:scale-95 hover:shadow-primary/50",
                     isTracking ? 'bg-red-500 hover:bg-red-600 shadow-red-500/40' : 'bg-primary hover:bg-primary/90'
                   )}
                 >

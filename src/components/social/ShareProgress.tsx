@@ -29,22 +29,19 @@ export function ShareProgress({ steps, earned }: ShareProgressProps) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full"
+            className="w-full px-4"
         >
-            <Button
+            <button
                 onClick={handleShare}
-                className="w-full bg-slate-100 hover:bg-white text-black font-black py-6 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)] group overflow-hidden relative"
+                className="w-full h-12 glass-panel hover:bg-white/10 text-foreground font-black text-xs tracking-[0.2em] rounded-2xl flex items-center justify-center gap-3 border border-white/10 transition-all active:scale-95 group overflow-hidden relative"
             >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
-                <Share2 className="w-5 h-5" />
-                SHARE PROGRESS
-                <Zap className="w-4 h-4 fill-black text-black" />
-            </Button>
-            <p className="text-[10px] text-center mt-3 text-muted-foreground uppercase tracking-widest font-bold opacity-60">
-                Share stats to Warpcast and challenge friends
-            </p>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                <Share2 className="w-4 h-4 text-primary" />
+                SHARE YOUR PACE
+                <Zap className="w-3 h-3 fill-primary text-primary animate-pulse" />
+            </button>
         </motion.div>
     );
 }
